@@ -9,10 +9,11 @@ provider "aws" {
   }
 }
 
-# 1. Define the Security Group in the Member Account
+# 1. Define a NEW Security Group resource
 resource "aws_security_group" "web_sg" {
   name        = "web-server-sg"
   description = "Security group for Netflix app servers"
+  # IMPORTANT: Ensure this VPC ID actually exists in the MEMBER account
   vpc_id      = "vpc-0a1c70c25aa611d04" 
 
   ingress {
@@ -30,14 +31,14 @@ resource "aws_security_group" "web_sg" {
   }
 }
 
-# 2. Deploy EC2 Instances referencing the new security group
+# 2. Deploy EC2 Instances referencing the new dynamic security group
 resource "aws_instance" "one" {
   count                  = 4
   ami                    = "ami-04aa00acb1165b32a"
   instance_type          = "t2.medium"
-  # Ensure "DeOps-Admin" exists in the region/account you are targeting
-  key_name               = "DeOps-Admin" 
+  key_name               = "DeOps-Admin"
   
+  # Reference the security group created by Terraform above
   vpc_security_group_ids = [aws_security_group.web_sg.id]
   
   tags = {
