@@ -1,12 +1,7 @@
 provider "aws" {
   region = "us-east-1"
 
-  # You MUST include this to switch into your Member Account
-  assume_role {
-    # Replace this ARN with the one from your Member Account
-    role_arn     = "arn:aws:iam::542129211547:role/TerraformDeploymentRole"
-    session_name = "Terraform-Member-Deployment"
-  }
+  
 }
 
 # 1. Define a NEW Security Group resource
