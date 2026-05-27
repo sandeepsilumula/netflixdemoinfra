@@ -1,5 +1,11 @@
 provider "aws" {
   region = "us-east-1"
+
+  # Everything here is now correctly inside the provider block
+  assume_role {
+    role_arn     = "arn:aws:iam::123456789012:role/TerraformDeploymentRole"
+    session_name = "Terraform-Member-Deployment"
+  }
 }
 
 variable "instance_names" {
@@ -9,10 +15,10 @@ variable "instance_names" {
 
 resource "aws_instance" "one" {
   count                  = 4
-  ami                    = "ami-091138d0f0d41ff90"
-  instance_type          = "c7i-flex.large"
-  key_name               = "DeOps-Admin"
-  vpc_security_group_ids = ["subnet-036834075c87e087f"]
+  ami                    = "ami-04aa00acb1165b32a"
+  instance_type          = "t2.medium"
+  key_name               = "argocd"
+  vpc_security_group_ids = ["sg-06785bc60f40dceda"]
   
   tags = {
     Name = var.instance_names[count.index]
