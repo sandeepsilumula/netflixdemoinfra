@@ -1,11 +1,7 @@
 provider "aws" {
   region = "us-east-1"
 
-  # Everything here is now correctly inside the provider block
-  assume_role {
-    role_arn     = "arn:aws:iam::123456789012:role/TerraformDeploymentRole"
-    session_name = "Terraform-Member-Deployment"
-  }
+ 
 }
 
 variable "instance_names" {
