@@ -1,15 +1,15 @@
 provider "aws" {
   region = "us-east-1"
 
- 
+  # You MUST include this to switch into your Member Account
+  assume_role {
+    # Replace this ARN with the one from your Member Account
+    role_arn     = "arn:aws:iam::123456789012:role/TerraformDeploymentRole"
+    session_name = "Terraform-Member-Deployment"
+  }
 }
 
-variable "instance_names" {
-  type    = list(string)
-  default = ["jenkins", "APPSERVER-1", "APPSERVER-2", "Monitoring server"]
-}
-
-# 1. Define a NEW Security Group that will be created in your Member Account
+# 1. Define the Security Group in the Member Account
 resource "aws_security_group" "web_sg" {
   name        = "web-server-sg"
   description = "Security group for Netflix app servers"
@@ -30,18 +30,22 @@ resource "aws_security_group" "web_sg" {
   }
 }
 
-# 2. Deploy EC2 Instances referencing the NEW security group
+# 2. Deploy EC2 Instances referencing the new security group
 resource "aws_instance" "one" {
   count                  = 4
   ami                    = "ami-04aa00acb1165b32a"
   instance_type          = "t2.medium"
-  key_name               = "DeOps-Admin"
+  # Ensure "DeOps-Admin" exists in the region/account you are targeting
+  key_name               = "DeOps-Admin" 
+  
   vpc_security_group_ids = [aws_security_group.web_sg.id]
-
   
   tags = {
     Name = var.instance_names[count.index]
   }
 }
 
-
+variable "instance_names" {
+  type    = list(string)
+  default = ["jenkins", "APPSERVER-1", "APPSERVER-2", "Monitoring server"]
+}
